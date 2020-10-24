@@ -1,5 +1,6 @@
 /*eslint-disable*/
 const express = require('express');
+const cors = require('cors');
 const serveStatic = require('serve-static');
 const path = require('path');
 const dotenv = require('dotenv');
@@ -7,7 +8,10 @@ const uuid = require('uuid');
 const fs = require('fs');
 
 dotenv.config();
+
 const app = express();
+app.use(cors());
+
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
 
@@ -48,9 +52,9 @@ io.on('connection', (socket) => {
 
 app.use('/', serveStatic(path.join(__dirname, '/dist')));
 
-app.get(/.*/, (req, res) => {
-  res.sendFile(path.join(__dirname, '/dist/index.html'));
-});
+// app.get(/.*/, (req, res) => {
+//   res.sendFile(path.join(__dirname, '/dist/index.html'));
+// });
 
 const appPort = process.env.PORT || 8000;
 app.listen(appPort);
@@ -59,3 +63,8 @@ console.log(`App is listening on port: ${appPort}`);
 const socketPort = process.env.SOCKET_PORT || 4113;
 io.listen(socketPort);
 console.log(`Socket is listening on port: ${socketPort}`);
+
+console.log(`\nSocket port: ${process.env.SOCKET_PORT}`);
+console.log(`Socket URL: ${process.env.VUE_APP_SOCKET_URL}`);
+console.log(`Socket config file location: ${process.env.GOOGLE_APPLICATION_CREDENTIALS}`);
+console.log(`Project id: ${process.env.project_id}`);

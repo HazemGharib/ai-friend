@@ -12,8 +12,6 @@
 </template>
 
 <script>
-import io from "socket.io-client";
-
 export default {
   name: "Home",
   components: {
@@ -21,20 +19,17 @@ export default {
   },
   data() {
     return {
-      socket: {},
       you: "",
       cara: "",
+      socket: undefined,
       recognition: undefined
     };
   },
-  created() {
-    this.socket = io(process.env.VUE_APP_SOCKET_URL).on(
-      "sendResponse",
-      ({ response }) => {
-        this.cara = response;
-        this.synthVoice(response);
-      }
-    );
+  sockets: {
+    sendResponse({ response }) {
+      this.cara = response;
+      this.synthVoice(response);
+    }
   },
   mounted() {
     const SpeechRecognition =
@@ -59,7 +54,7 @@ export default {
       const last = voice.results.length - 1;
       const text = voice.results[last][0].transcript;
       this.you = text;
-      this.socket.emit("propagateRequest", { text });
+      this.$socket.client.emit("propagateRequest", { text });
     },
     synthVoice(text) {
       const synth = window.speechSynthesis;
